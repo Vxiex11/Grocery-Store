@@ -7,7 +7,7 @@ Grocery Store is a point-of-sale system designed for the efficient management of
 
 # Features
 
-- Sales Management: Sales registration with multiple payment methods (cash, credit card, credit).
+- Sales Management: Sales registration with multiple payment methods (cash, credit card, debit card).
 - Inventory: Management of products, suppliers and stock levels.
 - Simulated Invoicing: Invoice generation with a simulated service that returns a digital stamp.
 - AI Reporting: Sales analysis to identify best-selling products and suppliers with higher participation.
