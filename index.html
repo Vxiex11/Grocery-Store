@@ -3,10 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADS project</title>
-    <!-- <link rel="stylesheet" href="css/style.css">  --> 
+    <title>Form</title>
+
+    <link rel="stylesheet" href="css/normalize.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!--Fuente para el proyectp-->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Krub:wght@400;700&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+    <main class="container">
+        <h1 class="intr">Invoice Sale</h1>
+        
+        <form class="form" action="/factura" method="POST" id="invoiceForm" novalidate>
+            
+            <div class="structure">
+                <div class="structure__field">
+                    <h2>Enter the data</h2>
+                    <div class="field mb-3">
+                        <label>Sales ticket id</label>
+                        <input
+                            type="number"
+                            name="ticket"
+                            class="form-control"
+                            placeholder="Ticket ID"
+                            id="ticket"
+                            required
+                        >
+                        <div class="invalid-feedback">Enter a valid ticket ID, please.</div>
+                    </div>
+                    <div class="field mb-3">
+                        <label>Date of sale</label>
+                        <input
+                            type="date"
+                            class="form-control"
+                            name="date"
+                            id="date"
+                            required
+                        >
+                        <div class="invalid-feedback">Enter a valid date, please.</div>
+                    </div>
+                </div>
+                <div class="structure__field">
+                    <h2>Personal data for invoicing</h2>
+                    <div class="field mb-3">
+                        <label>RFC</label>
+                        <input
+                            type="text"
+                            name="rfc"
+                            class="form-control"
+                            placeholder="RFC"
+                            id="rfc"
+                            required
+                        >
+                        <div class="invalid-feedback">Enter a valid RFC, please.</div>
+                    </div>
+                    <div class="field mb-3">
+                        <label>Name or company name</label>
+                        <input
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            placeholder="Your Name"
+                            id="name"
+                            required
+                        >
+                        <div class="invalid-feedback">Enter a valid full name, please.</div>
+                    </div>
+                    <div class="field mb-3">
+                        <label>Street</label>
+                        <input
+                            type="text"
+                            name="street"
+                            class="form-control"
+                            placeholder="Street name"
+                            id="street"
+                        >
+                        <div class="invalid-feedback">Enter a valid Street, please.</div>
+                    </div>
+                    <div class="field mb-3">
+                        <label>Zip Code</label>
+                        <input
+                            type="number"
+                            name="zipCode"
+                            class="form-control"
+                            placeholder="Post Code"
+                            id="zipCode"
+                            required
+                        >
+                        <div class="invalid-feedback">Enter a valid 5-digit zip code</div>
+                    </div>
+                    <div class="field mb-3">
+                        <label>State</label>
+                        <select id="state" class="form-control form-select form-select-lg size-state" required>
+                            <option value="" disabled selected>-- Select a state --</option>
+                            <option value="AGS">Aguascalientes</option>
+                            <option value="BC">Baja California</option>
+                            <option value="BCS">Baja California Sur</option>
+                            <option value="CAMP">Campeche</option>
+                            <option value="CDMX">Ciudad de México</option>
+                            <option value="CHIS">Chiapas</option>
+                            <option value="CHIH">Chihuahua</option>
+                            <option value="COAH">Coahuila</option>
+                            <option value="COL">Colima</option>
+                            <option value="DGO">Durango</option>
+                            <option value="GTO">Guanajuato</option>
+                            <option value="GRO">Guerrero</option>
+                            <option value="HGO">Hidalgo</option>
+                            <option value="JAL">Jalisco</option>
+                            <option value="MEX">Estado de México</option>
+                            <option value="MICH">Michoacán</option>
+                            <option value="MOR">Morelos</option>
+                            <option value="NAY">Nayarit</option>
+                            <option value="NL">Nuevo León</option>
+                            <option value="OAX">Oaxaca</option>
+                            <option value="PUE">Puebla</option>
+                            <option value="QRO">Querétaro</option>
+                            <option value="QROO">Quintana Roo</option>
+                            <option value="SLP">San Luis Potosí</option>
+                            <option value="SIN">Sinaloa</option>
+                            <option value="SON">Sonora</option>
+                            <option value="TAB">Tabasco</option>
+                            <option value="TAMPS">Tamaulipas</option>
+                            <option value="TLAX">Tlaxcala</option>
+                            <option value="VER">Veracruz</option>
+                            <option value="YUC">Yucatán</option>
+                            <option value="ZAC">Zacatecas</option>
+                          </select>
+                        <div class="invalid-feedback">Enter a valid state, please.</div>
+                    </div>
+                    <div class="field mb-3">
+                        <label>Email</label>
+                        <input
+                            type="email"
+                            name="Email"
+                            class="form-control"
+                            placeholder="Email address"
+                            id="email"
+                            required
+                        >
+                        <div class="invalid-feedback">Enter a valid email address.</div>
+                    </div>
+                </div>
+            </div> <!--End Structure-->
+    
+            <div class="button-container">
+                <button type="submit" class="btn btn-lg btn-outline-success button">Generate Invoice</button>
+            </div>
+        </form>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+    <script src="/js/script.js"></script>
+
 </body>
-</html> 
+</html>
