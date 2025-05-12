@@ -17,9 +17,9 @@ const mysql = require('mysql2/promise');
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
-    password: '020718', //coloca tu contraseña de tu MySql
+    password: 'Hola3245', //coloca tu contraseña de tu MySql
     database: 'sistema_ventas', //Nombramiento de tu Base de datos
-    port: 3307,  //Puerto
+    port: 3306,  //Puerto
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -31,7 +31,7 @@ const pool = mysql.createPool({
 const PORT = process.env.PORT || 3000;
 
 // =============================================
-// 2. MIDDLEWARES 
+// 2. MIDDLEWARES
 // =============================================
 // Middlewares de seguridad y parsing primero
 app.use(cors({
@@ -39,14 +39,14 @@ app.use(cors({
     credentials: true
 }));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true })); 
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { 
+    cookie: {
         httpOnly: true,
         secure: false, // Cambia a true si usas HTTPS
     }
@@ -54,7 +54,7 @@ app.use(session({
 
 
 // Servir archivos estáticos
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.json());// parsear JSON
 

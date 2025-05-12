@@ -4,9 +4,9 @@ const mysql = require("mysql2/promise");
 const pool = mysql.createPool({
   host: "localhost",
   user: "root",
-  password: "020718", //coloca tu contraseña de tu MySql
+  password: "Hola3245", //coloca tu contraseña de tu MySql
   database: "sistema_ventas", //Nombramiento de tu Base de datos
-  port: 3307, //Puerto
+  port: 3306, //Puerto
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -73,8 +73,8 @@ exports.crearProducto = async (req, res) => {
 
     // Insertar el nuevo producto
     const [result] = await connection.query(
-      `INSERT INTO productos 
-            (nombre, codigo_barras, precio_compra, precio_venta, existencia, id_proveedor) 
+      `INSERT INTO productos
+            (nombre, codigo_barras, precio_compra, precio_venta, existencia, id_proveedor)
             VALUES (?, ?, ?, ?, ?, ?)`,
       [
         nombre,
@@ -118,33 +118,33 @@ exports.crearProducto = async (req, res) => {
 exports.obtenerProducto = async (req, res) => {
   try {
     const searchTerm = req.query.q || '';
-    
+
     if (searchTerm.length < 2) {
       return res.json([]);
     }
 
     console.log('Ejecutando consulta para:', searchTerm); // Log para depuración
-    
+
     const connection = await pool.getConnection();
     const [rows] = await connection.query(
       `SELECT id_producto, nombre, precio_venta, codigo_barras, precio_compra, existencia, id_proveedor
-       FROM productos 
+       FROM productos
        WHERE nombre LIKE CONCAT('%', ?, '%')
        LIMIT 5`,
       [searchTerm]
     );
-    
+
     connection.release();
 
     console.log('Resultados encontrados:', rows.length); // Log para depuración
-    
+
     res.json(rows);
   } catch (error) {
     console.error('Error completo:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Error en el servidor',
       details: error.message,
-      sqlError: error.sqlMessage 
+      sqlError: error.sqlMessage
     });
   }
 };
@@ -178,13 +178,13 @@ exports.actualizarProducto = async (req, res) => {
     const connection = await pool.getConnection();
 
     const [result] = await connection.query(
-      `UPDATE productos SET 
-            nombre = ?, 
-            codigo_barras = ?, 
-            precio_compra = ?, 
-            precio_venta = ?, 
-            existencia = ?, 
-            id_proveedor = ? 
+      `UPDATE productos SET
+            nombre = ?,
+            codigo_barras = ?,
+            precio_compra = ?,
+            precio_venta = ?,
+            existencia = ?,
+            id_proveedor = ?
             WHERE id_producto = ?`,
       [
         nombre,

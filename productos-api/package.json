@@ -8,7 +8,6 @@
         "dev": "nodemon server.js",
         "sass": "sass --watch public/src/scss:build/css",
         "all": "concurrently \"npm run sass\" \"npm run dev\" \"npm run server\""
-  
     },
     "dependencies": {
         "bcryptjs": "^3.0.2",
@@ -24,14 +23,13 @@
         "helmet": "^8.1.0",
         "jsonwebtoken": "^9.0.2",
         "mysql2": "^3.14.0"
-        
     },
     "devDependencies": {
         "@faker-js/faker": "^9.7.0",
-        "nodemon": "^3.1.10",
         "concurrently": "^9.1.2",
         "gulp": "^5.0.0",
         "gulp-sass": "^6.0.1",
+        "nodemon": "^3.1.10",
         "sass": "^1.86.3"
     }
 }
