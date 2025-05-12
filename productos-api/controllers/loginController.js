@@ -1,29 +1,29 @@
 // controllers/loginController.js
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
-const db = require('../config/db');
+const db = require('../config/db.js');
 
 exports.login = async (req, res) => {
     const { usuario, contrasena } = req.body;
-    
+
     try {
         // Cambiar 'usuarios' por el nombre correcto de la tabla (parece ser 'empleados' aunque no se ve el nombre completo)
         const [users] = await db.query('SELECT * FROM usuarios WHERE usuario = ?', [usuario]);
-        
+
         if (users.length === 0) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
-    
+
         const user = users[0];
-        
+
         // Comparación directa de contraseña (sin bcrypt, ya que en la BD se ven en texto plano)
         // Si realmente están en texto plano (como parece en la imagen)
         if (contrasena !== user.contrasena) {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
-        
 
-        
+
+
         req.session.user = {
             id: user.id_empleado,
             username: user.usuario,
@@ -40,7 +40,7 @@ if (user.rol === 'administrador') {
 }
 
         // Si no coincide con ningún rol conocido
-        res.json({ 
+        res.json({
             message: 'Login exitoso',
             user: {
                 id: user.id_empleado,
