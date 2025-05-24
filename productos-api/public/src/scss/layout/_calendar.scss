@@ -1,0 +1,79 @@
+@use '../base/variables' as v;
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1.25rem;
+  }
+
+.day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: v.$gray-200;
+  min-height: 3rem;
+  border-radius: 0.625rem;
+  font-family: v.$font_mono;
+}
+
+.empty-day{
+  background-color: v.$gray-50;
+  border-radius: 0.625rem;
+}
+
+.sales{
+  color: v.$orange-950;
+}
+
+.calendar-days{
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-bottom: 2px solid v.$gray-300;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+  p{
+    margin: 0;
+    text-align: center;
+    padding: 1rem 0;
+  }
+}
+
+.amount-tag{
+  position: absolute;
+  visibility: hidden;
+  transform: translateY(-100%);
+  background-color: v.$white;
+  font-size: 0.75rem;
+  padding: 0.2rem;
+  border: 1.5px solid v.$gray-300;
+  border-radius: 0.5rem;
+  p{
+    margin: 0;
+  }
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.day:hover .amount-tag {
+  opacity: 1;
+  visibility: visible;
+}
+
+.select-container{
+  display: flex;
+  justify-content: flex-end;
+  max-width: 15rem;
+}
+
+.month-selector{
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  font-family: v.$font_default;
+  font-size: 1rem;
+  border-radius: 0.625rem;
+  border: 1px solid v.$gray-300;
+  width: 100%;
+}

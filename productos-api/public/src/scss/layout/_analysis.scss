@@ -1,0 +1,47 @@
+@use '../base/variables' as v;
+
+.stats{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8rem;
+  margin-top: 2rem;
+  width: 100%;
+
+  h1{
+    margin: 0.5rem 0;
+  }
+
+  p{
+    margin: 0;
+  }
+}
+
+.stats-card{
+  p{
+    color: v.$gray-700;
+  }
+}
+
+.status-container{
+  display: flex;
+  gap: 0.5rem;
+
+  p{
+    margin: 0;
+  }
+
+}
+
+.top-circle-arrow, .down-circle-arrow{
+  max-width: 1rem;
+}
+
+.top-circle-arrow{
+  fill: v.$green;
+  transform: rotate(180deg);
+}
+
+.down-circle-arrow{
+  fill: v.$red-500;
+}
+

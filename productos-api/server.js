@@ -10,6 +10,7 @@ const loginRouter = require('./routes/loginRoutes');
 const sesionesRouter = require('./routes/sesiones');
 const { isAuthenticated, isAdmin } = require('./controllers/sesiones');
 const ventasRouter = require('./routes/ventas');
+const promedioVentasRoutes = require('./routes/promedioRoutes');
 const app = express();
 const mysql = require('mysql2/promise');
 
@@ -40,7 +41,7 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use('/api/ventas-heatmap', require('./routes/heatmap'));
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -66,6 +67,7 @@ app.use('/', sesionesRouter);
 app.use('/', productosRouter); // Rutas de productos
 app.use('/', loginRouter); // Rutas de login
 app.use('/api/ventas', ventasRouter);
+app.use('/api/analisis', promedioVentasRoutes);
 app.use('/build', express.static(__dirname + '/build'));
 app.get('/api/ultimo-id-venta', async (req, res) => {
     try {
@@ -80,6 +82,8 @@ app.get('/api/ultimo-id-venta', async (req, res) => {
       res.status(500).json({ error: 'Error al obtener el id de la venta' });
     }
   });
+
+
 
 // 4. MANEJO DE ERRORES
 // =============================================

@@ -1,8 +1,57 @@
 @use '../base/variables' as v;
 
 .sidebar {
-  flex: 0 0 2%;  /* Ocupa el 25% del ancho */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 60px; // usa width si es fixed
+  height: 100vh;
   border-right: 2px solid v.$gray-300;
-  padding: 20px;
   overflow-y: auto;
+  z-index: 100;
+
+  &-nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%; // ya no 100vh aquí
+  }
+
+  &-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 1rem 0;
+    box-sizing: border-box;
+
+    &:hover {
+      background-color: v.$orange-100;
+
+      .sidebar-icon {
+        fill: v.$orange-600;
+      }
+    }
+  }
+
+  &-icon {
+    max-width: 1rem;
+    fill: v.$gray-800;
+  }
+
+  &-logout-link {
+    &:hover {
+      cursor: pointer;
+      background-color: v.$red-100;
+
+      .sidebar-logout {
+        fill: v.$red-500;
+      }
+    }
+  }
+
+  &-logout {
+    max-width: 1.2rem;
+    fill: v.$gray-800;
+  }
 }
