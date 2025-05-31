@@ -77,7 +77,6 @@ async function cargarOpcionesMeses() {
       mesSelector.appendChild(option);
     });
 
-    // Si hay al menos un mes, generar el calendario con el primero
     if (meses.length > 0) {
       const [año, mes] = meses[0].mes.split("-").map(Number);
       generarCalendario(año, mes);
@@ -101,20 +100,118 @@ function calcularColor(cantidad) {
   return '#fdeec8';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function mostrarPromedioSemanal() {
   fetch('../api/analisis/promedio-semanal')
     .then(res => res.json())
     .then(data => {
-      // Convertir a número usando Number() y validar con isNaN
-      const promedioNum = Number(data.promedio);
-      const promedio = (!isNaN(promedioNum)) ? promedioNum.toFixed(2) : '0.00';
-      document.getElementById('promedio-semanal').textContent = `$${promedio}`;
+      const variacionNum = Number(data.variacion);
+      const actualNum = Number(data.promedio_actual);
+
+      const variacionText = document.getElementById('variacion-text');
+      const iconUp = document.getElementById('icon-up');
+      const iconDown = document.getElementById('icon-down');
+      const promedioText = document.getElementById('promedio-actual');
+
+      const variacion = !isNaN(variacionNum) ? Math.abs(variacionNum).toFixed(2) : '0.00';
+      const promedioActual = !isNaN(actualNum) ? actualNum.toFixed(2) : '0.00';
+
+      promedioText.textContent = `$${promedioActual}`;
+      variacionText.textContent = `${variacionNum >= 0 ? '+' : '-'}${variacion}%`;
+
+      if (variacionNum > 0) {
+        iconUp.style.display = 'inline';
+        iconDown.style.display = 'none';
+        variacionText.style.color = '#29BE44'; // verde
+      } else if (variacionNum < 0) {
+        iconUp.style.display = 'none';
+        iconDown.style.display = 'inline';
+        variacionText.style.color = '#F62C2C'; // rojo
+      } else {
+        iconUp.style.display = 'none';
+        iconDown.style.display = 'none';
+        variacionText.style.color = 'gray'; // neutro
+      }
     })
     .catch(err => console.error('Error al obtener el promedio:', err));
+}
+
+function mostrarPromedioMensual() {
+  fetch('../api/analisis/promedio-mensual')
+    .then(res => res.json())
+    .then(data => {
+      const variacionNum = Number(data.variacion);
+      const actualNum = Number(data.promedio_actual);
+
+      const variacionText = document.getElementById('variacion-mensual');
+      const iconUp = document.getElementById('icon-up-mensual');
+      const iconDown = document.getElementById('icon-down-mensual');
+      const promedioText = document.getElementById('promedio-mensual');
+
+      const variacion = !isNaN(variacionNum) ? Math.abs(variacionNum).toFixed(2) : '0.00';
+      const promedioActual = !isNaN(actualNum) ? actualNum.toFixed(2) : '0.00';
+
+      promedioText.textContent = `$${promedioActual}`;
+      variacionText.textContent = `${variacionNum >= 0 ? '+' : '-'}${variacion}%`;
+
+      if (variacionNum > 0) {
+        iconUp.style.display = 'inline';
+        iconDown.style.display = 'none';
+        variacionText.style.color = '#29BE44'; // verde
+      } else if (variacionNum < 0) {
+        iconUp.style.display = 'none';
+        iconDown.style.display = 'inline';
+        variacionText.style.color = '#F62C2C'; // rojo
+      } else {
+        iconUp.style.display = 'none';
+        iconDown.style.display = 'none';
+        variacionText.style.color = 'gray'; // neutro
+      }
+    })
+    .catch(err => console.error('Error al obtener el promedio mensual:', err));
+}
+
+function mostrarPromedioAnual() {
+  fetch('../api/analisis/promedio-anual')
+    .then(res => res.json())
+    .then(data => {
+      const variacionNum = Number(data.variacion);
+      const actualNum = Number(data.promedio_actual);
+
+      const variacionText = document.getElementById('variacion-anual');
+      const iconUp = document.getElementById('icon-up-anual');
+      const iconDown = document.getElementById('icon-down-anual');
+      const promedioText = document.getElementById('promedio-anual');
+
+      const variacion = !isNaN(variacionNum) ? Math.abs(variacionNum).toFixed(2) : '0.00';
+      const promedioActual = !isNaN(actualNum) ? actualNum.toFixed(2) : '0.00';
+
+      promedioText.textContent = `$${promedioActual}`;
+      variacionText.textContent = `${variacionNum >= 0 ? '+' : '-'}${variacion}%`;
+
+      if (variacionNum > 0) {
+        iconUp.style.display = 'inline';
+        iconDown.style.display = 'none';
+        variacionText.style.color = '#29BE44'; // verde
+      } else if (variacionNum < 0) {
+        iconUp.style.display = 'none';
+        iconDown.style.display = 'inline';
+        variacionText.style.color = '#F62C2C'; // rojo
+      } else {
+        iconUp.style.display = 'none';
+        iconDown.style.display = 'none';
+        variacionText.style.color = 'gray'; // neutro
+      }
+    })
+    .catch(err => console.error('Error al obtener el promedio mensual:', err));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  mostrarPromedioSemanal();
+  mostrarPromedioMensual();
+  mostrarPromedioAnual();
 });
 
 mesSelector.addEventListener("change", manejarCambio);
-
 
 // Inicial: mes actual
 manejarCambio();

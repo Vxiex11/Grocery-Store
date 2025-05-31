@@ -541,7 +541,6 @@ async function registrarVenta() {
 
     if (response.ok) {
       console.log('Venta registrada con éxito:', data);
-      // Limpiar el carrito y mostrar mensaje
       document.querySelector('.bill-products').innerHTML = '';
       actualizarDetallesPago();
 
@@ -550,12 +549,24 @@ async function registrarVenta() {
       pagoRealizadoModal.classList.add('payment-completed-modal-active');
       modal.classList.remove('payment-modal-show');
 
+      const preloader = document.querySelector('.preloader');
+      const recargarConLoader = () => {
+      if (preloader) {
+        preloader.style.display = 'flex'; // o 'block' según tu CSS
+      }
+        setTimeout(() => {
+          location.reload();
+        }, 1000); // un pequeño delay para que el loader se vea
+      };
+
+  // Recarga automática después de 5 segundos
       setTimeout(() => {
-        location.reload();
+        recargarConLoader();
       }, 5000);
 
+  // Si el usuario da clic en "volver", recarga antes
       document.querySelector('.return-button').addEventListener('click', () => {
-        location.reload();
+        recargarConLoader();
       });
     } else {
       throw new Error(data.error || 'Error al registrar la venta');

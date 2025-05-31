@@ -1,17 +1,4 @@
 @use '../base/variables' as v;
-
-.content {
-  flex: 1;  /* Se expande automáticamente */
-  background: #fff;
-  display: flex;
-  justify-content: center;
-}
-
-.data-area {
-  width: 100%;
-  max-width: 52rem;
-}
-
 .item-search {
   margin-top: 2rem;
   width: 100%;

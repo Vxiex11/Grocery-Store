@@ -1,0 +1,65 @@
+@use '../base/variables' as v;
+
+.header-content{
+  text-align: center;
+
+  p{
+    color: v.$gray-700;
+  }
+}
+
+.menu-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  justify-content: center;
+}
+
+
+.menu-card{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 1rem;
+  border: 1.5px solid v.$gray-300;
+  background-color: v.$white;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+  padding: 3rem;
+
+  svg{
+    max-width: 3rem;
+    .cls-1{
+      fill: v.$gray-100;
+    }
+
+    .cls-2{
+      fill: v.$gray-700;
+    }
+  }
+
+  h2{
+    margin: 0;
+  }
+}
+
+.menu-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border-color: v.$orange-400;
+
+  h2{
+    color: v.$orange-600;
+  }
+  .cls-1{
+    fill: v.$orange-200;
+  }
+  .cls-2{
+    fill: v.$orange-600;
+  }
+
+  background-color: v.$orange-50;
+}

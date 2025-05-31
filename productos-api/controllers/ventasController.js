@@ -14,7 +14,11 @@ const pool = mysql.createPool({
 const registrarVenta = async (req, res) => {
   const { id_venta, total, detalles } = req.body;
   const fecha = new Date();
-  const id_empleado = 6// Considera hacer esto dinámico
+  const id_empleado = req.session.user?.id;
+
+  if (!id_empleado) {
+  return res.status(401).json({ error: 'Usuario no autenticado o sesión expirada' });
+  }
 
   if (!detalles || detalles.length === 0) {
     return res.status(400).json({ error: 'No hay productos en la venta' });

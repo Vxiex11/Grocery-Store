@@ -22,4 +22,17 @@ h1, h2{
 .layout {
   display: flex;
   height: 100vh;
+  margin-left: 60px;
+}
+
+.content {
+  flex: 1;  /* Se expande automáticamente */
+  background: #fff;
+  display: flex;
+  justify-content: center;
+}
+
+.data-area {
+  width: 100%;
+  max-width: 52rem;
 }
