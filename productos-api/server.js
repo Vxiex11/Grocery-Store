@@ -56,8 +56,25 @@ app.use(session({
 
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(express.json());// parsear JSON
+
+/* SERVER */
+app.get('/api/session', (req, res) => {
+    if (req.session.user) {
+        res.json({
+            authenticated: true,
+            user: {
+                username: req.session.user.username,
+                role: req.session.user.role
+            }
+        });
+    } else {
+        res.status(200).json({
+            authenticated: false
+        });
+    }
+});
+
 
 // =============================================
 // 3. RUTAS
@@ -65,17 +82,17 @@ app.use(express.json());// parsear JSON
 // API Routes
 app.use('/', sesionesRouter);
 app.use('/', productosRouter); // Rutas de productos
-app.use('/', loginRouter); // Rutas de login
+app.use('/api/login', loginRouter); // Rutas de login
 app.use('/api/ventas', ventasRouter);
 app.use('/api/analisis', promedioVentasRoutes);
 app.use('/build', express.static(__dirname + '/build'));
 app.get('/api/ultimo-id-venta', async (req, res) => {
     try {
-      const [rows] = await pool.execute('SELECT id_venta FROM ventas ORDER BY id_venta DESC LIMIT 1');
+      const [rows] = await pool.execute('SELECT sale_id FROM sales ORDER BY sale_id DESC LIMIT 1');
       if (rows.length > 0) {
-        res.json({ id_venta: rows[0].id_venta });
+        res.json({ sale_id: rows[0].sale_id });
       } else {
-        res.json({ id_venta: 0 });
+        res.json({ sale_id: 0 });
       }
     } catch (error) {
       console.error('Error en /api/ultimo-id-venta:', error.message);

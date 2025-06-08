@@ -4,9 +4,55 @@ document.addEventListener('DOMContentLoaded', function() {
     const userNameSpan = document.getElementById('userName');
     const gestionProductosBtn = document.getElementById('gestionProductosBtn');
     const cajeroBtn = document.getElementById('cajeroBtn');
+    const mensajeDiv = document.getElementById('mensaje');
+    
     
     // Inicializar la aplicación
     initMenu();
+
+    // FUNCTIONS
+    function mostrarMensaje(mensaje, tipo) {
+        mensajeDiv.innerHTML = `<p>${mensaje}</p>`;
+        mensajeDiv.className = tipo;
+
+        setTimeout(() => {
+            if (mensajeDiv.textContent === mensaje) {
+                mensajeDiv.textContent = '';
+                mensajeDiv.className = '';
+            }
+        }, 5000);
+    }
+
+    async function verificarSesionAdmin() {
+        try {
+            const response = await fetch('/api/session', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+
+            const data = await response.json();
+            
+            // Verificar autenticación y rol
+            if (!data.authenticated || data.user?.role !== 'admin') {
+                throw new Error('Acceso no autorizado');
+            }
+            
+            return data;
+            
+        } catch (error) {
+            console.error('Error verificando sesión:', error.message);
+            setTimeout(() => window.location.replace('/login.html'), 1000);
+            throw error;
+        }
+    }
 
     async function initMenu() {
         try {
@@ -15,12 +61,28 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Configurar elementos de la UI
             if (userNameSpan && sessionData.user) {
-                userNameSpan.textContent = sessionData.user.nombre || 'Administrador';
+                userNameSpan.textContent = sessionData.user.username || 'admin';
             }
             
             // Configurar botón de logout
             if (logoutBtn) {
-                logoutBtn.addEventListener('click', cerrarSesion);
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault(); // Previene un salto innecesario si es un <a>
+                    fetch('/api/logout')
+                        .then(res => {
+                            if (res.redirected) {
+                                window.location.href = res.url; // Redirige al login si el backend lo hace
+                            }else if (res.ok) {
+                                window.location.href = '/login.html';
+                             } else {
+                                return res.text().then(text => { throw new Error(text); });
+                            }
+                        })
+                        .catch(err => {
+                            console.error('[!] Error al cerrar sesión:', err);
+                            alert('Error al cerrar sesión.');
+                        });
+                });
             }
             
             // Configurar botón de gestión de productos
@@ -72,38 +134,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error de sesión:', error);
                 window.location.replace('/login.html');
             });
-    }
-
-    async function verificarSesionAdmin() {
-        try {
-            const response = await fetch('/api/session', {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Cache-Control': 'no-cache',
-                    'Accept': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
-            }
-
-            const data = await response.json();
-            
-            // Verificar autenticación y rol
-            if (!data.authenticated || data.user?.rol !== 'administrador') {
-                throw new Error('Acceso no autorizado');
-            }
-            
-            return data;
-            
-        } catch (error) {
-            console.error('Error verificando sesión:', error.message);
-            mostrarNotificacion('Redirigiendo al login...', 'error');
-            setTimeout(() => window.location.replace('/login.html'), 1000);
-            throw error;
-        }
     }
 
     function configurarManejoHistorial() {

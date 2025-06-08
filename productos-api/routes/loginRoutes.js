@@ -1,7 +1,17 @@
-//routes/loginRoutes
+// routes/loginRoutes.js
 const express = require('express');
-const router = express.Router();
+const rateLimit = require('express-rate-limit');
 const loginController = require('../controllers/loginController');
+const router = express.Router();
 
-router.post('/', loginController.login); //POST procesa datos enviado por el cliente, el login en generla
+// Limitador de intentos de login
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes to tries
+    max: 10, // only 10 tries
+    message: { error: 'Too many attempts, try again later...' }
+});
+
+// rute POST to Login
+router.post('/', loginLimiter, loginController.login);
+
 module.exports = router;

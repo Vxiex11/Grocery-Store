@@ -3,34 +3,6 @@ const modalKeyboard = document.querySelector('.keyboard-modal');
 const displayDinero = document.querySelector('.money');
 let valorDinero = '';
 
-async function listarTodosProductos() {
-  try {
-      const response = await fetch('/api/listar');
-      const productos = await response.json();
-
-      if (response.ok) {
-        productosGlobales = productos;
-          if (productos.length === 0) {
-          } else {
-            mostrarProductos([]);
-          }
-      } else {
-          throw new Error(productos.error || 'Error al obtener productos');
-      }
-  } catch (error) {
-      console.error('Error:', error);
-      //mostrarMensaje(`Error: ${error.message}`, 'error');
-  }
-}
-
-async function ultimoIdVenta() {
-  const response = await fetch('../api/ultimo-id-venta');
-  if (!response.ok) {
-    throw new Error('Error al obtener el id de la venta');
-  }
-  const data = await response.json();
-  return data.id_venta;
-}
 /*
 ====================================================================
 =========================== FUNCIONES UI ===========================
@@ -55,8 +27,8 @@ function mostrarProductos(productos) {
           <div class="purchase-item">
             <div class="item-info">
               <div class="product">
-                <p class="item-id" data-id="${producto.id_producto}">ID: ${producto.id_producto}</p>
-                <p class="product-name">${producto.nombre}</p>
+                <p class="item-id" data-id="${producto.product_id}">ID: ${producto.product_id}</p>
+                <p class="product-name">${producto.product_name}</p>
               </div>
 
               <div class="item-controller">
@@ -72,8 +44,8 @@ function mostrarProductos(productos) {
               </div>
 
               <div class="price-available">
-                <p class="price">$${producto.precio_venta}</p>
-                <p class="info-low available">${producto.existencia}</p>
+                <p class="price">$${producto.sale_price}</p>
+                <p class="info-low available">${producto.existence}</p>
               </div>
 
             </div>
@@ -331,6 +303,37 @@ function nuevaOrden() {
   }, 300);
 }
 
+/* ASYNC ' S */
+
+async function listarTodosProductos() {
+  try {
+      const response = await fetch('/api/listar');
+      const productos = await response.json();
+
+      if (response.ok) {
+        productosGlobales = productos;
+          if (productos.length === 0) {
+          } else {
+            mostrarProductos([]);
+          }
+      } else {
+          throw new Error(productos.error || 'Error al obtener productos');
+      }
+  } catch (error) {
+      console.error('Error:', error);
+      //mostrarMensaje(`Error: ${error.message}`, 'error');
+  }
+}
+
+async function ultimoIdVenta() {
+  const response = await fetch('../api/ultimo-id-venta');
+  if (!response.ok) {
+    throw new Error('Error al obtener el id de la venta');
+  }
+  const data = await response.json();
+  return data.id_venta;
+}
+
 async function actualizarIdVenta() {
   const newOrderButton = document.querySelector('.new-order-button');
   const billIdElement = document.querySelector('.bill-id');
@@ -512,10 +515,10 @@ async function registrarVenta() {
       const precioProducto = parseFloat(billProduct.querySelector('.price').textContent.replace('$', ''));
 
       productos.push({
-        id_producto: idProducto,
-        nombre: nombreProducto,
-        cantidad: cantidadProducto,
-        precio_unitario: precioProducto // Cambiado a precio_unitario para coincidir con el backend
+        product_id: idProducto,
+        product_name: nombreProducto,
+        existence: cantidadProducto,
+        sale_price: precioProducto // Cambiado a precio_unitario para coincidir con el backend
       });
     });
 
@@ -600,7 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const filtrados = productosGlobales.filter(producto =>
-      producto.id_producto.toString().includes(texto)
+      producto.product_id.toString().includes(texto)
     );
 
     mostrarProductos(filtrados);

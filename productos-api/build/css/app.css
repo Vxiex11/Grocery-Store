@@ -945,7 +945,256 @@
 body, html {
   margin: 0;
   padding: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: #2e2b3a;
+  font-family: sans-serif;
+}
+
+.background_login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100%;
+  background: linear-gradient(135deg, #f0f0f0, #d6d6d6);
+  border-radius: 17px;
+}
+
+.card_login {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 80%;
+  height: 80%;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #1f1d2b;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.left-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: #a2acb8;
+  padding: 10px;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .left-card img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 30px;
+  }
+  .right-card {
+    background-color: #a2acb8;
+    color: #2f3137;
+    border-left: 3px solid #fac04f;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+  .login-container h2 {
+    margin-bottom: 1rem;
+  }
+}
+.spaces_login {
+  margin-bottom: -50px;
+}
+
+/* Form style*/
+/* General form */
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* style to input */
+input[type=text],
+input[type=password] {
+  width: 100%;
+  max-width: 350px;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  background-color: #1e1e2f;
+  color: #ffffff;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+/* focus the input */
+input:focus {
+  border-color: #fac04f;
+  box-shadow: 0 0 10px #fac04f;
+  outline: none;
+}
+
+/* labels */
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: whitesmoke;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+
+/*Text login0*/
+.text-login {
+  font-size: 16px;
+  text-align: left;
+  margin-right: 222px;
+}
+
+.text-login1 {
+  font-size: 16px;
+  text-align: left;
+  margin-right: 287px;
+}
+
+/* h's */
+.login-container h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f1d2b;
+  margin-top: -20px;
+}
+
+.login-container h2 {
+  font-size: 1.5rem;
+  color: #1f1d2b;
+}
+
+.login-container h3 {
+  font-size: 1.3rem;
+}
+
+/* button */
+button {
+  background-color: #fac04f;
+  color: #1f1d2b;
+  font-weight: bold;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+button:hover {
+  background-color: #e0aa3e;
+}
+
+.products-A1 body {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  display: flex;
+  padding: 40px;
+  gap: 50px;
+  margin-top: 20px;
+  margin-left: -20px;
+}
+
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  border: 4px solid #ccc;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.option.active {
+  border-color: #F97316;
+}
+
+.option.active .circle {
+  background-color: #F97316;
+}
+
+.main-container {
+  align-items: center;
+  justify-content: center;
+  margin-left: 200px;
+  flex: 1;
+  padding: 2rem;
+  max-width: 1569px;
+  min-width: 1400px;
+}
+
+.circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.right-panel {
+  flex: 1;
+  flex-direction: column;
+}
+
+.search-input {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 500px;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.right-panel input[type=text] {
+  max-width: 850px;
+}
+
+.search-result {
+  font-size: 14px;
+  color: #555;
+  margin-left: 15px;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #fff;
 }
 
 body {

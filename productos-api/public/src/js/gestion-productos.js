@@ -23,7 +23,11 @@ document.addEventListener('DOMContentLoaded', function() {
     cancelarEdicionBtn.addEventListener('click', resetForm);
     eliminarProductoBtn.addEventListener('click', eliminarProductoActual);
     listarProductosBtn.addEventListener('click', listarTodosProductos);
-    logoutBtn.addEventListener('click', cerrarSesion);
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', cerrarSesion);
+    } else {
+        console.warn('El botón de logout no se encontró en el DOM');
+    }
 
     buscarProductoInput.addEventListener('input', buscarProductosEnTiempoReal);
     document.addEventListener('click', cerrarResultadosBusqueda);
@@ -31,42 +35,37 @@ document.addEventListener('DOMContentLoaded', function() {
     // Verificar sesión al cargar la página
     verificarSesion();
 
-    async function verificarSesion() {
-        try {
-            const response = await fetch('/api/session', {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Cache-Control': 'no-cache',
-                    'Accept': 'application/json'
-                }
-            });
+    /* FUNCTIONS */
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                const errorMessage = errorData.error || 'Error al verificar la sesión';
-                console.error('Error del backend:', errorMessage);
-                throw new Error(errorMessage);
+    function mostrarMensaje(mensaje, tipo) {
+        mensajeDiv.innerHTML = `<p>${mensaje}</p>`;
+        mensajeDiv.className = tipo;
+
+        setTimeout(() => {
+            if (mensajeDiv.textContent === mensaje) {
+                mensajeDiv.textContent = '';
+                mensajeDiv.className = '';
             }
+        }, 5000);
+    }
 
-            const data = await response.json();
+    function mostrarListaProductos(productos) {
+    const lista = document.createElement('div');
+    lista.innerHTML = '<h3>Lista de productos:</h3>';
 
-            if (!data.authenticated || data.user?.rol !== 'administrador') {
-                window.location.replace('/login.html');
-                return false;
-            }
+    const ul = document.createElement('ul');
+    productos.forEach(producto => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <strong>ID: ${producto.product_id}</strong> - ${producto.product_name}
+            (Existencia: ${producto.existence})
+            <button class="secondary" onclick="cargarProductoDesdeLista(${producto.product_id})">Editar</button>
+        `;
+        ul.appendChild(li);
+    });
 
-            console.log('Sesión verificada:', data);
-            document.getElementById('userName').textContent = data.user?.nombre || 'Usuario';
-
-            configurarManejoHistorial();
-            return true;
-
-        } catch (error) {
-            console.error('Error en verificarSesion:', error.message);
-            window.location.replace('/login.html');
-            return false;
-        }
+        lista.appendChild(ul);
+        mensajeDiv.appendChild(lista);
     }
 
     function configurarManejoHistorial() {
@@ -98,6 +97,140 @@ document.addEventListener('DOMContentLoaded', function() {
                 timestamp: Date.now(),
                 authenticated: true
             }, '', window.location.href);
+        }
+    }
+
+    function mostrarSugerencias(prodcuts) {
+    resultadosBusqueda.innerHTML = '';
+
+    prodcuts.forEach(prodcuts => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.className = 'suggestion-item';
+
+        suggestionItem.innerHTML = `
+            <div class = "suggestion-info">
+                <p>${prodcuts.product_name}</p>
+                <span class="price">$${Number(prodcuts.sale_price).toFixed(2)}</span>
+                <span class="id">ID: ${prodcuts.product_id}</span>
+            </div>
+        `;
+
+        suggestionItem.addEventListener('click', () => {
+            cargarProductoEnFormulario(prodcuts);
+            buscarProductoInput.value = prodcuts.product_id;
+            resultadosBusqueda.innerHTML = '';
+            mostrarMensaje('Producto cargado', 'success');
+        });
+
+        resultadosBusqueda.appendChild(suggestionItem);
+    });
+
+        resultadosBusqueda.style.display = 'block';
+    }
+
+
+
+    function buscarProductosEnTiempoReal(e) {
+        const query = e.target.value.trim();
+
+        if (query.length < 2) {
+            resultadosBusqueda.innerHTML = '';
+            resultadosBusqueda.style.display = 'none';
+            return;
+        }
+
+        clearTimeout(buscarProductoInput.debounceTimer);
+        buscarProductoInput.debounceTimer = setTimeout(async () => {
+            try {
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+
+                if (response.ok) {
+                    const productos = await response.json();
+                    if (productos.length > 0) {
+                        mostrarSugerencias(productos);
+                    } else {
+                        resultadosBusqueda.innerHTML = '<div class="no-results">No se encontraron productos</div>';
+                        resultadosBusqueda.style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Error en búsqueda:', error);
+            }
+        }, 300);
+    }
+
+
+    function cerrarResultadosBusqueda(e) {
+        if (!buscarProductoInput.contains(e.target) && !resultadosBusqueda.contains(e.target)) {
+            resultadosBusqueda.style.display = 'none';
+        }
+    }
+
+    function cargarProductoEnFormulario(prodcuts) {
+        //console.log("Datos del producto recibidos:", prodcuts); -> ONLY WHEN WE WANNA SEE THIS !!!!
+        document.getElementById('productoId').value = prodcuts.product_id || prodcuts.id;
+        document.getElementById('nombre').value = prodcuts.product_name || '';
+        document.getElementById('codigo_barras').value = prodcuts.barcode || '';
+        document.getElementById('precio_compra').value = prodcuts.purchase_price || '';
+        document.getElementById('precio_venta').value = prodcuts.sale_price || '';
+        document.getElementById('existencia').value = prodcuts.existence || '';
+        document.getElementById('id_proveedor').value = prodcuts.supplier_id || '';
+
+        submitBtn.textContent = 'Actualizar Producto';
+        cancelarEdicionBtn.classList.remove('hidden');
+        productoActionsDiv.classList.remove('hidden');
+        formTitle.textContent = 'Editar Producto';
+    }
+
+    function resetForm() {
+        productoForm.reset();
+        document.getElementById('productoId').value = '';
+        submitBtn.textContent = 'Guardar Producto';
+        cancelarEdicionBtn.classList.add('hidden');
+        productoActionsDiv.classList.add('hidden');
+        formTitle.textContent = 'Nuevo Producto';
+        mostrarMensaje('Formulario listo para nuevo producto', 'info');
+        buscarProductoInput.value = '';
+    }
+
+
+    /* ASYNC ' S */
+
+    async function verificarSesion() {
+        try {
+            const response = await fetch('/api/session', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const errorMessage = errorData.error || 'Error al verificar la sesión';
+                console.error('Error del backend:', errorMessage);
+                throw new Error(errorMessage);
+            }
+
+            const data = await response.json();
+
+            if (!data.authenticated || data.user?.role !== 'admin') {
+                window.location.replace('/login.html');
+                return false;
+            }
+
+            // console.log('Sesión verificada:', data); -> do not remove comment unless it is a production !!!
+            document.getElementById('userName').textContent = data.user?.username || 'username';
+
+            configurarManejoHistorial();
+            return true;
+
+        } catch (error) {
+            console.error('Error en verificarSesion:', error.message);
+            window.location.replace('/login.html');
+            return false;
         }
     }
 
@@ -135,22 +268,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const url = productoId ? `/${productoId}` : '/api/crear';
         const method = productoId ? 'PUT' : 'POST';
 
-        const nombre = document.getElementById('nombre').value.trim();
+        const product_name = document.getElementById('nombre').value.trim();
         const precioVenta = document.getElementById('precio_venta').value;
 
-        if (!nombre || !precioVenta) {
+        if (!product_name || !precioVenta) {
             mostrarMensaje('Nombre y precio de venta son campos obligatorios', 'error');
             return;
         }
 
-        const productoData = {
-            nombre: nombre,
-            codigo_barras: document.getElementById('codigo_barras').value.trim(),
-            precio_compra: parseFloat(document.getElementById('precio_compra').value) || 0,
-            precio_venta: parseFloat(precioVenta),
-            existencia: parseInt(document.getElementById('existencia').value) || 0,
-            id_proveedor: parseInt(document.getElementById('id_proveedor').value) || null
+        const data_product = {
+            product_name: document.getElementById('nombre').value.trim(),
+            barcode: document.getElementById('codigo_barras').value.trim(),
+            purchase_price: parseFloat(document.getElementById('precio_compra').value),
+            sale_price: parseFloat(document.getElementById('precio_venta').value),
+            existence: parseInt(document.getElementById('existencia').value),
+            supplier_id: parseInt(document.getElementById('id_proveedor').value),
+            product_id: parseInt(document.getElementById('productoId').value)
         };
+
 
         try {
             const response = await fetch(url, {
@@ -159,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/json',
                 },
                 credentials: 'include',
-                body: JSON.stringify(productoData)
+                body: JSON.stringify(data_product)
             });
 
             const contentType = response.headers.get('content-type');
@@ -176,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'success'
                 );
                 if (!productoId) {
-                    document.getElementById('productoId').value = data.id_producto || data.id;
+                    document.getElementById('productoId').value = data.product_id || data.id;
                     cargarProductoEnFormulario(data);
                 }
             } else {
@@ -196,76 +331,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-
-
-    function mostrarSugerencias(productos) {
-        resultadosBusqueda.innerHTML = '';
-
-        productos.forEach(producto => {
-            const suggestionItem = document.createElement('div');
-            suggestionItem.className = 'suggestion-item';
-
-            suggestionItem.innerHTML = `
-                <div class = "suggestion-info">
-                    <p>${producto.nombre}</p>
-                    <span class="price">$${Number(producto.precio_venta).toFixed(2)}</span>
-                    <span class="id">ID: ${producto.id_producto}</span>
-                </div>
-            `;
-
-            suggestionItem.addEventListener('click', () => {
-                cargarProductoEnFormulario(producto);
-                buscarProductoInput.value = producto.id_producto;
-                resultadosBusqueda.innerHTML = '';
-                mostrarMensaje('Producto cargado', 'success');
-            });
-
-            resultadosBusqueda.appendChild(suggestionItem);
-        });
-
-        resultadosBusqueda.style.display = 'block';
-    }
-
-
-
-    function buscarProductosEnTiempoReal(e) {
-        const query = e.target.value.trim();
-
-        if (query.length < 2) {
-            resultadosBusqueda.innerHTML = '';
-            resultadosBusqueda.style.display = 'none';
-            return;
-        }
-
-        clearTimeout(buscarProductoInput.debounceTimer);
-        buscarProductoInput.debounceTimer = setTimeout(async () => {
-            try {
-                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-
-                if (response.ok) {
-                    const productos = await response.json();
-                    if (productos.length > 0) {
-                        mostrarSugerencias(productos);
-                    } else {
-                        resultadosBusqueda.innerHTML = '<div class="no-results">No se encontraron productos</div>';
-                        resultadosBusqueda.style.display = 'block';
-                    }
-                }
-            } catch (error) {
-                console.error('Error en búsqueda:', error);
-            }
-        }, 300);
-    }
-
-
-
-
-
-    function cerrarResultadosBusqueda(e) {
-        if (!buscarProductoInput.contains(e.target) && !resultadosBusqueda.contains(e.target)) {
-            resultadosBusqueda.style.display = 'none';
-        }
-    }
 
     async function eliminarProductoActual() {
         const productoId = document.getElementById('productoId').value;
@@ -301,33 +366,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function cargarProductoEnFormulario(producto) {
-        console.log("Datos del producto recibidos:", producto);
-        document.getElementById('productoId').value = producto.id_producto || producto.id;
-        document.getElementById('nombre').value = producto.nombre || '';
-        document.getElementById('codigo_barras').value = producto.codigo_barras || '';
-        document.getElementById('precio_compra').value = producto.precio_compra || '';
-        document.getElementById('precio_venta').value = producto.precio_venta || '';
-        document.getElementById('existencia').value = producto.existencia || '';
-        document.getElementById('id_proveedor').value = producto.id_proveedor || '';
-
-        submitBtn.textContent = 'Actualizar Producto';
-        cancelarEdicionBtn.classList.remove('hidden');
-        productoActionsDiv.classList.remove('hidden');
-        formTitle.textContent = 'Editar Producto';
-    }
-
-    function resetForm() {
-        productoForm.reset();
-        document.getElementById('productoId').value = '';
-        submitBtn.textContent = 'Guardar Producto';
-        cancelarEdicionBtn.classList.add('hidden');
-        productoActionsDiv.classList.add('hidden');
-        formTitle.textContent = 'Nuevo Producto';
-        mostrarMensaje('Formulario listo para nuevo producto', 'info');
-        buscarProductoInput.value = '';
-    }
-
     async function listarTodosProductos() {
         try {
             const response = await fetch('/api/listar');
@@ -349,40 +387,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function mostrarMensaje(mensaje, tipo) {
-        mensajeDiv.innerHTML = `<p>${mensaje}</p>`;
-        mensajeDiv.className = tipo;
-
-        setTimeout(() => {
-            if (mensajeDiv.textContent === mensaje) {
-                mensajeDiv.textContent = '';
-                mensajeDiv.className = '';
-            }
-        }, 5000);
-    }
-
-    function mostrarListaProductos(productos) {
-        const lista = document.createElement('div');
-        lista.innerHTML = '<h3>Lista de productos:</h3>';
-
-        const ul = document.createElement('ul');
-        productos.forEach(producto => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <strong>ID: ${producto.id_producto}</strong> - ${producto.nombre}
-                (Existencia: ${producto.existencia})
-                <button class="secondary" onclick="cargarProductoDesdeLista(${producto.id_producto})">Editar</button>
-            `;
-            ul.appendChild(li);
-        });
-
-        lista.appendChild(ul);
-        mensajeDiv.appendChild(lista);
-    }
-
     window.cargarProductoDesdeLista = async function(id) {
         try {
-            const response = await fetch(`/${id}`);
+            const response = await fetch(`/api/productos/${id}`);
             const producto = await response.json();
 
             if (response.ok) {

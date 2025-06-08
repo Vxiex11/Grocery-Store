@@ -4,8 +4,8 @@ const mysql = require("mysql2/promise");
 const pool = mysql.createPool({
   host: "localhost",
   user: "root",
-  password: "Hola3245", //coloca tu contraseña de tu MySql
-  database: "sistema_ventas", //Nombramiento de tu Base de datos
+  password: "", //coloca tu contraseña de tu MySql
+  database: "grocerystore", //Nombramiento de tu Base de datos
   port: 3306, //Puerto
   waitForConnections: true,
   connectionLimit: 10,
@@ -17,30 +17,30 @@ exports.crearProducto = async (req, res) => {
   //manda "crarProducto" a routes/productos.js
 
   const {
-    nombre,
-    codigo_barras,
-    precio_compra,
-    precio_venta,
-    existencia,
-    id_proveedor,
+    product_name,
+    barcode,
+    purchase_price,
+    sale_price,
+    existence,
+    supplier_id,
   } = req.body;
 
   // Validación
-  if (!nombre || !codigo_barras) {
+  if (!product_name || !barcode) {
     return res
       .status(400)
-      .json({ error: "Nombre y código de barras son obligatorios" });
+      .json({ error: "Name and ID are required" });
   }
 
   if (
-    isNaN(precio_compra) ||
-    isNaN(precio_venta) ||
-    isNaN(existencia) ||
-    isNaN(id_proveedor)
+    isNaN(purchase_price) ||
+    isNaN(sale_price) ||
+    isNaN(existence) ||
+    isNaN(supplier_id)
   ) {
     return res
       .status(400)
-      .json({ error: "Los campos numéricos deben ser valores válidos" });
+      .json({ error: "Numbers field has to valid" });
   }
 
   try {
@@ -48,22 +48,22 @@ exports.crearProducto = async (req, res) => {
 
     // Verificar si el proveedor existe
     const [proveedor] = await connection.query(
-      "SELECT id_proveedor FROM proveedores WHERE id_proveedor = ?",
-      [id_proveedor]
+      "SELECT supplier_id FROM suppliers WHERE supplier_id = ?",
+      [supplier_id]
     );
 
     if (proveedor.length === 0) {
       connection.release();
       return res.status(400).json({
         error: "El proveedor especificado no existe",
-        id_proveedor_no_encontrado: id_proveedor,
+        supplier_id_no_encontrado: supplier_id,
       });
     }
 
     // Verificar si el código de barras ya existe
     const [existing] = await connection.query(
-      "SELECT id_producto FROM productos WHERE codigo_barras = ?",
-      [codigo_barras]
+      "SELECT product_id FROM products WHERE barcode = ?",
+      [barcode]
     );
 
     if (existing.length > 0) {
@@ -73,29 +73,29 @@ exports.crearProducto = async (req, res) => {
 
     // Insertar el nuevo producto
     const [result] = await connection.query(
-      `INSERT INTO productos
-            (nombre, codigo_barras, precio_compra, precio_venta, existencia, id_proveedor)
+      `INSERT INTO products
+            (product_name, barcode, purchase_price, sale_price, existence, supplier_id)
             VALUES (?, ?, ?, ?, ?, ?)`,
       [
-        nombre,
-        codigo_barras,
-        parseFloat(precio_compra),
-        parseFloat(precio_venta),
-        parseInt(existencia),
-        parseInt(id_proveedor),
+        product_name,
+        barcode,
+        parseFloat(purchase_price),
+        parseFloat(sale_price),
+        parseInt(existence),
+        parseInt(supplier_id),
       ]
     );
 
     connection.release();
 
     res.status(201).json({
-      id_producto: result.insertId,
-      nombre,
-      codigo_barras,
-      precio_compra: parseFloat(precio_compra),
-      precio_venta: parseFloat(precio_venta),
-      existencia: parseInt(existencia),
-      id_proveedor: parseInt(id_proveedor),
+      product_id: result.insertId,
+      product_name,
+      barcode,
+      purchase_price: parseFloat(purchase_price),
+      sale_price: parseFloat(sale_price),
+      existence: parseInt(existence),
+      supplier_id: parseInt(supplier_id),
       mensaje: "Producto creado exitosamente",
     });
   } catch (error) {
@@ -127,9 +127,9 @@ exports.obtenerProducto = async (req, res) => {
 
     const connection = await pool.getConnection();
     const [rows] = await connection.query(
-      `SELECT id_producto, nombre, precio_venta, codigo_barras, precio_compra, existencia, id_proveedor
-       FROM productos
-       WHERE nombre LIKE CONCAT('%', ?, '%')
+      `SELECT product_id, product_name, sale_price, barcode, purchase_price, existence, supplier_id
+       FROM products
+       WHERE product_name LIKE CONCAT('%', ?, '%')
        LIMIT 5`,
       [searchTerm]
     );
@@ -149,27 +149,28 @@ exports.obtenerProducto = async (req, res) => {
   }
 };
 
+
 // Actualizar un producto existente
 exports.actualizarProducto = async (req, res) => {
   //exporta a routes/productos.js
   const { id } = req.params;
   const {
-    nombre,
-    codigo_barras,
-    precio_compra,
-    precio_venta,
-    existencia,
-    id_proveedor,
+    product_name,
+    barcode,
+    purchase_price,
+    sale_price,
+    existence,
+    supplier_id,
   } = req.body;
 
   // Validación básica
   if (
-    !nombre ||
-    !codigo_barras ||
-    !precio_compra ||
-    !precio_venta ||
-    !existencia ||
-    !id_proveedor
+    !product_name ||
+    !barcode ||
+    !purchase_price ||
+    !sale_price ||
+    !existence ||
+    !supplier_id
   ) {
     return res.status(400).json({ error: "Todos los campos son obligatorios" });
   }
@@ -178,21 +179,21 @@ exports.actualizarProducto = async (req, res) => {
     const connection = await pool.getConnection();
 
     const [result] = await connection.query(
-      `UPDATE productos SET
-            nombre = ?,
-            codigo_barras = ?,
-            precio_compra = ?,
-            precio_venta = ?,
-            existencia = ?,
-            id_proveedor = ?
-            WHERE id_producto = ?`,
+      `UPDATE products SET
+            product_name = ?,
+            barcode = ?,
+            purchase_price = ?,
+            sale_price = ?,
+            existence = ?,
+            supplier_id = ?
+            WHERE product_id = ?`,
       [
-        nombre,
-        codigo_barras,
-        precio_compra,
-        precio_venta,
-        existencia,
-        id_proveedor,
+        product_name,
+        barcode,
+        purchase_price,
+        sale_price,
+        existence,
+        supplier_id,
         id,
       ]
     );
@@ -204,13 +205,13 @@ exports.actualizarProducto = async (req, res) => {
     }
 
     const productoActualizado = {
-      id_producto: parseInt(id),
-      nombre,
-      codigo_barras,
-      precio_compra: parseFloat(precio_compra),
-      precio_venta: parseFloat(precio_venta),
-      existencia: parseInt(existencia),
-      id_proveedor: parseInt(id_proveedor),
+      product_id: parseInt(id),
+      product_name,
+      barcode,
+      purchase_price: parseFloat(purchase_price),
+      sale_price: parseFloat(sale_price),
+      existence: parseInt(existence),
+      supplier_id: parseInt(supplier_id),
     };
 
     res.status(200).json(productoActualizado);
@@ -230,13 +231,13 @@ exports.eliminarProducto = async (req, res) => {
     const connection = await pool.getConnection();
 
     // Primero eliminar los detalles de venta relacionados
-    await connection.query(`DELETE FROM detalle_ventas WHERE id_producto = ?`, [
+    await connection.query(`DELETE FROM sale_details WHERE product_id = ?`, [
       id,
     ]);
 
     // Luego eliminar el producto
     const [result] = await connection.query(
-      `DELETE FROM productos WHERE id_producto = ?`,
+      `DELETE FROM products WHERE product_id = ?`,
       [id]
     );
 
@@ -262,10 +263,9 @@ exports.listarProductos = async (req, res) => {
   //exporta a routes/productos.js
   try {
     const connection = await pool.getConnection();
-        res.setHeader('Content-Type', 'application/json'); // ← Añade esto
+    res.setHeader('Content-Type', 'application/json'); // ← Añade esto
 
-
-    const [rows] = await connection.query(`SELECT * FROM productos`);
+    const [rows] = await connection.query(`SELECT * FROM products`);
 
     connection.release();
 
@@ -278,3 +278,25 @@ exports.listarProductos = async (req, res) => {
   }
 };
 
+// get product by id (GET /api/productos/:id)
+exports.obtenerProductoPorId = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const connection = await pool.getConnection();
+    const [rows] = await connection.query(
+      `SELECT * FROM products WHERE product_id = ?`,
+      [id]
+    );
+    connection.release();
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Producto no encontrado" });
+    }
+
+    res.json(rows[0]); // return the first product
+  } catch (error) {
+    console.error("Error al obtener producto:", error);
+    res.status(500).json({ error: "Error en el servidor", detalles: error.message });
+  }
+};

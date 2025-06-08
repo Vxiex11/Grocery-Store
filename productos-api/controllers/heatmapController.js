@@ -4,8 +4,8 @@ const mysql = require("mysql2/promise");
 const pool = mysql.createPool({
   host: "localhost",
   user: "root",
-  password: "Hola3245", //coloca tu contraseña de tu MySql
-  database: "sistema_ventas", //Nombramiento de tu Base de datos
+  password: "", 
+  database: "grocerystore", //Nombramiento de tu Base de datos
   port: 3306, //Puerto
   waitForConnections: true,
   connectionLimit: 10,

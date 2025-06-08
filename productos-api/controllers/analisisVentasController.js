@@ -3,8 +3,8 @@ const mysql = require("mysql2/promise");
 const pool = mysql.createPool({
   host: "localhost",
   user: "root",
-  password: "Hola3245",
-  database: "sistema_ventas",
+  password: "",
+  database: "grocerystore",
   port: 3306,
   waitForConnections: true,
   connectionLimit: 10,
@@ -18,7 +18,7 @@ const promedioVentasSemanales = async (req, res) => {
       SELECT AVG(semana_total) AS promedio_semanal
       FROM (
         SELECT YEAR(fecha) AS anio, WEEK(fecha, 1) AS semana, SUM(total) AS semana_total
-        FROM ventas
+        FROM sales
         WHERE MONTH(fecha) = MONTH(CURDATE())
           AND YEAR(fecha) = YEAR(CURDATE())
         GROUP BY anio, semana
@@ -29,7 +29,7 @@ const promedioVentasSemanales = async (req, res) => {
       SELECT AVG(semana_total) AS promedio_semanal
       FROM (
         SELECT YEAR(fecha) AS anio, WEEK(fecha, 1) AS semana, SUM(total) AS semana_total
-        FROM ventas
+        FROM sales
         WHERE MONTH(fecha) = MONTH(CURDATE() - INTERVAL 1 MONTH)
           AND YEAR(fecha) = YEAR(CURDATE() - INTERVAL 1 MONTH)
         GROUP BY anio, semana
@@ -101,15 +101,15 @@ const promedioVentasMensuales = async (req, res) => {
 const promedioVentasAnuales = async (req, res) => {
   try {
     const queryActual = `
-      SELECT SUM(total) AS total_anio_actual
-      FROM ventas
+      SELECT SUM(sale_total) AS total_anio_actual
+      FROM sales
       WHERE YEAR(fecha) = YEAR(CURDATE());
     `;
 
     const queryAnterior = `
-      SELECT SUM(total) AS total_anio_anterior
-      FROM ventas
-      WHERE YEAR(fecha) = YEAR(CURDATE() - INTERVAL 1 YEAR);
+      SELECT SUM(sale_total) AS total_anio_anterior
+      FROM sales
+      WHERE YEAR(sale_date) = YEAR(CURDATE() - INTERVAL 1 YEAR);
     `;
 
     const [[actual]] = await pool.query(queryActual);

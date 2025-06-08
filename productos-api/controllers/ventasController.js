@@ -3,8 +3,8 @@ const mysql = require('mysql2/promise');
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'Hola3245',
-  database: 'sistema_ventas',
+  password: '',
+  database: 'grocerystore',
   port: 3306,
   waitForConnections: true,
   connectionLimit: 10,
@@ -31,7 +31,7 @@ const registrarVenta = async (req, res) => {
 
     // 1. Registrar la venta principal
     await conn.query(
-      'INSERT INTO ventas (id_venta, fecha, total, id_empleado) VALUES (?, ?, ?, ?)',
+      'INSERT INTO sales (sale_id, sale_date, total, id_empleado) VALUES (?, ?, ?, ?)',
       [id_venta, fecha, total, id_empleado]
     );
 
